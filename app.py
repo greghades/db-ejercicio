@@ -1,11 +1,7 @@
-from ctypes import create_unicode_buffer
 import sqlite3
-from xml.dom.minidom import Element
-
-from colorama import Cursor
 
 try:
-    conection = sqlite3.connect('crud-loopgk')
+    conection = sqlite3.connect('crud-loopgk.DB')
     cursor = conection.cursor()
     #cursor.execute("CREATE TABLE users (name TEXT, lastname TEXT, job_title TEXT,mail TEXT, password TEXT)")
 except:
@@ -15,7 +11,7 @@ except:
 
 def createRegister(name, lastname, job_title, mail,password):
     
-    query = f"INSERT INTO users VALUES ('{name}','{lastname}','{job_title}','{mail}','{password}')"
+    query = f"INSERT INTO users VALUES (NULL,'{name}','{lastname}','{job_title}','{mail}','{password}')"
     cursor.execute(query)
     conection.commit()
 
@@ -26,15 +22,56 @@ def readRegister():
     return elemets
 
 
-# def updateRegister(name="", lastname="", job_title="", mail="",password=""):
-#     query = "ALTER TABLE users "
+def updateRegister(pk,name, lastname, job_title, mail,password):
+    query = f"""
+    UPDATE users
+    SET name = '{name}', lastname = '{lastname}', job_title = '{job_title}', mail = '{mail}', password = '{password}'
+    WHERE pk = {pk}; 
+    """ 
+    cursor.execute(query)
+    conection.commit()
 
 def deleteRegister(id):
-    query = f"DELETE FROM users WHERE users_pk = {id}"
+    query = f"DELETE FROM users WHERE pk = {id}"
     cursor.execute(query)
     conection.commit()
 
 
-# createRegister('Alejandra','Palacios','Maestra','aleja@gmail.com','543124')
-deleteRegister(1)
-print(readRegister())
+
+def menu():
+    opcion = True
+    while(opcion):
+        print("Digite la opcion a realizar")
+        print("1. Crear Registro: ")
+        print("2. Leer registros")
+        print("3. Actualizar Registros")
+        print("4. Borrar Registro")
+        print("0. Para salir")
+        opcion = int(input("Opcion: "))
+
+        if(opcion == 1):
+            name = input("Digite su nombre: ")
+            lastname = input("Digite su apellido: ")
+            jobtitle = input("Diga su trabajo: ")
+            mail = input("Diga su mail: ")
+            password = input("Diga su password: ")
+            createRegister(name,lastname,jobtitle,mail,password)
+        
+        elif(opcion == 2):
+            print(readRegister())
+        
+        elif(opcion == 3):
+            print("Digite los campos que desea actualizar")
+            print(readRegister())
+            pk = int(input("Id del campo a actualizar"))
+            name = input("Digite su nombre: ")
+            lastname = input("Digite su apellido: ")
+            jobtitle = input("Diga su trabajo: ")
+            mail = input("Diga su mail: ")
+            password = input("Diga su password: ")
+            updateRegister(pk,name,lastname,jobtitle,mail,password)
+        elif(opcion == 4):
+            pk = int(input("Id del campo a eliminar"))
+            deleteRegister(pk)
+
+menu()
